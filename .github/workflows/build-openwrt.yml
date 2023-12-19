@@ -101,12 +101,7 @@ jobs:
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
         cd openwrt/bin/packages/*/*
         zip -r ./packages.zip ./*
-        rm -rf base
-        rm -rf luci
-        rm -rf packages
-        rm -rf routing
-        rm -rf telephony
-        echo "FIRMWARE_PACKAGES=$PWD" >> $GITHUB_ENV
+        mv ./packages.zip ${{ env.FIRMWARE }}
         echo "::set-output name=status::success"
 
     - name: 上传固件到Github Action空间
@@ -114,9 +109,7 @@ jobs:
       if: steps.organize.outputs.status == 'success' && !cancelled()
       with:
         name: OpenWrt_firmware${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
-        path: |
-          ${{ env.FIRMWARE }}
-          ${{ FIRMWARE_PACKAGES }}
+        path: ${{ FIRMWARE_PACKAGES }}
 
     - name: 创建release标签
       id: tag
@@ -138,9 +131,7 @@ jobs:
         name: OpenWrt_firmware${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
         tag_name: ${{ steps.tag.outputs.release_tag }}
         body_path: release.txt
-        files: |
-          ${{ env.FIRMWARE }}/*
-          ${{ FIRMWARE_PACKAGES }}/packages.zip
+        files: ${{ env.FIRMWARE }}/*
           
     - name: 删除工作流运行
       uses: GitRML/delete-workflow-runs@main
