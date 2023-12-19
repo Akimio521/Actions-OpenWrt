@@ -109,7 +109,7 @@ jobs:
       if: steps.organize.outputs.status == 'success' && !cancelled()
       with:
         name: OpenWrt_firmware${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
-        path: ${{ FIRMWARE_PACKAGES }}
+        path: ${{ env.FIRMWARE }}
 
     - name: 创建release标签
       id: tag
